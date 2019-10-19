@@ -17,7 +17,7 @@ Two ways to open file:
 from random import randint
 
 # Variables
-scoreFilePath = "/Users/200239/Desktop/scores.txt"
+scoreFilePath = "scores.txt"
 
 def writeScores():
 
