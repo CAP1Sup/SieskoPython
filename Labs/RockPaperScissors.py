@@ -27,6 +27,9 @@ def main():
         if rawUserPlay == 'stop' or rawUserPlay == 'end':
             break
 
+        plays = ['rock.', 'paper.', 'scissors.']
+
+        print("The computer's play was " + convertValues(computerPlay, rockPaperScissorsCharacters, plays, False))
         # Set up arrays for the conversion from words to numbers
         words = ["rock", "paper", "scissors", "r", "p", "s"]
     
