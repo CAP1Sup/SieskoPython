@@ -4,7 +4,7 @@
 
 # Import random integer function
 from random import randint
-
+from functions import convertValues
 
 def main():
     while True:
@@ -46,34 +46,6 @@ def main():
         # Print what the end result was
         print(convertValues(result, possibleResults, printOutputs, False))
         print()
-
-
-
-# Function for input to output conversion. For future use
-def convertValues(inputVal, inputArray, outputArray, wrapAround):
-    '''
-    :param inputVal: The value being converted
-    :param inputArray: An array of values to convert from
-    :param outputArray: An array of values to output in alignment with the input array
-    :param wrapAround: Set to True to wrap around the output array if the value is out of range. Otherwise it will raise an error
-    '''
-
-    # Check all entries in the input array and compare them to the input value
-    for entry in range(0, len(inputArray)):
-        # If the value is a match, return the equivient from the output array
-        if inputArray[entry] == inputVal:
-            # Wrap around the output if the value is out of range
-            if wrapAround:
-                wrapAroundEntry = entry % len(outputArray)
-                return outputArray[wrapAroundEntry]
-            else:
-                try:
-                    return outputArray[entry]
-                except:
-                    print(
-                        "The input array listing is out of the range of the output array's")
-    
-    print("The input value was not found. Make sure that you are using the correct value.")
 
 
 def findRockPaperScissorsResult(a, b):
