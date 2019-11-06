@@ -8,6 +8,6 @@ def main():
     pswd = input("Input your password: ")
     # Run a password guess with the input password, 10 threads (experimental), print the time 
     # taken, print the password, and use the builtin dictionary
-    guessPassword(pswd, 1, True, True, -1)
+    guessPassword(pswd, True, True, -1)
 
 main()
