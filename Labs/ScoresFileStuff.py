@@ -88,5 +88,5 @@ def readScores():
 
     print("Finished!")
 
-#writeScores()
-readScores()
+writeScores()
+#readScores()

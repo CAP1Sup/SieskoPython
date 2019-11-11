@@ -3,20 +3,23 @@
 # This program will accept 5 test grades (in percentage) and find the letter and average of all of the grades
 
 def main():
-    
+    # Create names and results lists
     namings = ["first", "second", "third", "fourth", "fifth"]
     result = ["", "", "", "", ""]
 
+    # Go through 5 times to get each test score
     for entry in range(0,5):
         result[entry] = input("Input your " + namings[entry] + " test grade: ")
         result[entry] = convertToInt(result[entry])
         print("Your grade was a " + str( getLetterGrade( result[entry] ) ))
 
+    # Calculate the averages
     averageResult = calcAverage(result, 5, 2)
 
     print("The average grade was " + str(averageResult) + "%")
     print("The letter grade for the average was " + str( getLetterGrade(averageResult) ))
 
+# Converts valid numbers to integers, otherwise it errors
 def convertToInt(x):
     try:
         x = int(x)
