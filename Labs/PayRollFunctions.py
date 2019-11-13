@@ -55,7 +55,7 @@ def main():
             break
 
 
-def getPayHourlyCalcGross(print):
+def getPayHourlyCalcGross(printOutput):
     notDone = True
 
     while notDone:
@@ -83,7 +83,7 @@ def getPayHourlyCalcGross(print):
             print("Input a positive number into rate")
             continue
         # Start printing
-        if print:
+        if printOutput:
             print("")
             print("Initech Payroll Report")
             print("Hours worked:...............", hoursWorked)
@@ -97,12 +97,12 @@ def getPayHourlyCalcGross(print):
         # If overtime
         if hoursWorked > 40:
             gross = base + overtime
-            if print:
+            if printOutput:
                 print("Gross:......................", round(gross, 2))
                 print("Overtime:...................", round(overtime, 2))
         else:
             gross = base
-            if print:
+            if printOutput:
                 print("Gross:......................", round(base, 2))
         
         # Calculations finished
@@ -111,7 +111,7 @@ def getPayHourlyCalcGross(print):
     return gross
 
 
-def getPayComissionCalcGross(print):
+def getPayComissionCalcGross(printOutput):
     notDone = True
 
     while notDone:
@@ -149,7 +149,7 @@ def getPayComissionCalcGross(print):
             bonus = 500
 
         # Print calculations
-        if print:
+        if printOutput:
             print("")
             print("Initech Payroll Report")
             print("Gross:......................", round(gross, 2))
