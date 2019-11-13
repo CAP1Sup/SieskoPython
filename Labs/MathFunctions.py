@@ -33,7 +33,12 @@ def multiply(z, x):
     return result
 
 def divide(z, x):
-    result = convertToInt(z) / convertToInt(x)
+    if not x == 0:
+        result = convertToInt(z) / convertToInt(x)
+    
+    else:
+        result = "Can't divide by 0!"
+
     return result
 
 def modulus(z, x):
