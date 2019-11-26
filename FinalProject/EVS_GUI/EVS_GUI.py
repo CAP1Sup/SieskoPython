@@ -49,13 +49,24 @@ def setupGUI():
     for entry in range(0, tagCount - 1):
         tag.append(CreateEntry(5, (list_start + (spacing * entry)), True))
 
+
+    spinBox_spacing = 30
+    spinBox_list_start = 55
+    spinBox = []
+    for entry in range(0, tagCount - 1):
+        spinBox.append(CreateSpinBox(3, 0, 10, 200, (spinBox_list_start + (spinBox_spacing * entry)), True))
+
+    # Team number title
+    createLabel("Team Number", 440, 25, True)
+
     # Team number box
-    team_num = CreateEntry(300, 400, True)
+    team_num = CreateEntry(400, 55, True)
 
     tagValues = []
     for entry in range(0, len(tag)):
         tagValues.append(tag[entry].get())
 
+    # Create button for generating code files
     generateButton = tk.Button(gui, text = "Generate files", command = generateFiles(tagValues), font = 'Helvetica 20 bold')
     generateButton.place(x = 730, y = 765)
 
@@ -111,4 +122,21 @@ class CreateEntry:
     def show(self):
         self.entry.place(x = self.entry.x, y = self.entry.y)
 
+class CreateSpinBox:
+    def __init__(self, width, from_, to, x_location, y_location, visibility):
+        self.spinbox = tk.Spinbox(gui, from_ = from_, to = to, width = width)
+        if visibility == True:
+            self.spinbox.place(x = x_location, y = y_location)
+        self.spinbox.x = x_location
+        self.spinbox.y = y_location
+
+    def get(self):
+        return self.spinbox.get()
+
+    def hide(self):
+        self.spinbox.place_forget()
+
+    def show(self):
+        self.spinbox.place(x = self.spinbox.x, y = self.spinbox.y)
+        
 main()
