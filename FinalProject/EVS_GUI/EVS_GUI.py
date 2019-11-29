@@ -3,10 +3,15 @@
 # This program will generate a GUI in which the user can input the parameters. 
 # The parameters will be used to create a code file that can be run on any Linux machine
 
+# TODO: 
+# Create the bottom description
+# Finish file generator
+# help tab and files
+
 # Constants
 maxTitles = 3
 tagCount = 10
-top_row_offset = 55
+top_row_offset = 130
 first_entry_box_offset = 30
 
 # Variables
@@ -18,6 +23,7 @@ spinBox = []
 import tkinter as tk
 from tkinter import filedialog
 from PIL import ImageTk,Image
+import webbrowser
 import csv
 import os
 
@@ -57,17 +63,17 @@ def setupGUI():
 
     gui.config(menu = menu)
 
-    # 
-    createLabel("EVS Code Generator", 150, 0, 900, 'c', 'Courier 48 bold')
+    # TODO: Create bottom text
+    # createLabel("EVS Code Generator", 150, 0, 900, 'c', 'Courier 48 bold')
 
     # Declare description variable so that the code isn't cluttered with long text
     description = getTextFile("/resources/text/description.txt")
 
     # Description
-    createLabel(description, 350, 695, 525, 'l', 'Helvetica 14')  
+    createLabel(description, 350, 0, 525, 'l', 'Helvetica 14')  
 
     # Logo
-    createImage('/resources/images/logoNoBack.png', 0, 695, .5)
+    createImage('/resources/images/logoNoBack.png', 0, 0, .5)
 
     # Tag title
     createLabel("Tags (from neural network)", 5, top_row_offset, 200, 'l', 'Helvetica 14 bold')
@@ -105,6 +111,9 @@ def setupGUI():
     #generateButton = tk.Button(gui, text = "Generate files", command = generateFiles(tagValues), font = 'Helvetica 20 bold')
     #generateButton.place(x = 730, y = 765)
 
+
+def openLink(url):
+    webbrowser.open_new(url)
 
 def getTextFile(path):
     global currentDir

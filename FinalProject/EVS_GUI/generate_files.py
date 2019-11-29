@@ -1,6 +1,6 @@
 pythonCode = ""
 
-def generatePythonFile(tag_list, instance_list, raw_team_number, neural_compute_stick, streamer, dashboard_confidence):
+def generatePythonFile(tag_list, instance_list, raw_team_number, neural_compute_stick, printInfo, streamer, dashboard_confidence):
     
     # Create master string
     
@@ -51,16 +51,64 @@ def main():
     subtables_string = ""
     
     for tag_entry in range(0, len(tag_list)):
-        if tag_entry == 1:
-            subtables_string = subtables_string + "     " + tag_list[tag_entry] + "Tables = []"
+        if tag_entry == 0:
+            subtables_string = subtables_string + "    " + tag_list[tag_entry] + "Tables = []"
         else:
             subtables_string = subtables_string + " \n\n    " + tag_list[tag_entry] + "Tables = []"
         for instance_entry in range(0, instance_list[tag_entry]):
             subtables_string = subtables_string + "\n"
             subtables_string = subtables_string + "    " + tag_list[tag_entry] + str(instance_entry) + " = EVS.getSubTable('" + tag_list[tag_entry] + str(instance_entry) + "')"
+            subtables_string = subtables_string + "\n    " + tag_list[tag_entry] + "Tables.append(" + tag_list[tag_entry] + str(instance_entry) + ")"
 
     addString(subtables_string)
 
+    addString('''\n
+    # Setup EdgeIQ
+    obj_detect = edgeiq.ObjectDetection(
+            "alwaysai/mobilenet_ssd")
+    obj_detect.load(engine=edgeiq.Engine.DNN''')
+
+    if neural_compute_stick == True:
+        addString("_OPENVINO")
+
+    addString(")")
+
+    if printInfo == True:
+        addString('''\n \n''')
+        addString('''
+    # Print out info
+    print("Loaded model:\\n{}\\n".format(obj_detect.model_id))
+    print("Engine: {}".format(obj_detect.engine))
+    print("Accelerator: {}\\n".format(obj_detect.accelerator))
+    print("Labels:\\n{}\\n".format(obj_detect.labels))"''')
+
+    if streamer == True:
+        addString('''\n
+    # Get the FPS
+    fps = edgeiq.FPS()''')
+
+    if dashboard_confidence == True:
+        addString('''\n
+    # Put the default confidence on the SmartDashboard
+    sd.putString('DB/String 3', default_conf_thres)''')
+
+    addString('''\n
+    try:
+        with edgeiq.WebcamVideoStream(cam=0) as video_stream)''')
+
+    if streamer == True:
+        addString(""", \\
+                edgeiq.Streamer() as streamer""")
+
+    addString(""": \n            
+            # Allow Webcam to warm up
+            time.sleep(2.0)
+            fps.start()""")
+
+    for entry in range(0, len(tag_list)):
+        addString('''\n
+            for i in range(0,''' + str(instance_list[entry] - 1) + '''): \n''')
+        addString('''                ''' + tag_list[entry] + '''Tables[i].putBoolean('inUse', False)''')
 
 
     global pythonCode
@@ -78,7 +126,8 @@ tag_list = ("hatch", "ball", "tape")
 instance_list = (3, 3, 6)
 raw_team_number = 834
 neural_compute_stick = True
+printInfo = True
 streamer = True
 dashboard_confidence = True
 
-generatePythonFile(tag_list, instance_list, raw_team_number, neural_compute_stick, streamer, dashboard_confidence)
+generatePythonFile(tag_list, instance_list, raw_team_number, neural_compute_stick, printInfo, streamer, dashboard_confidence)

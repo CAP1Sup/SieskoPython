@@ -51,7 +51,7 @@ def main():
     tape5 = evs.getSubTable('Tape5')
     tapeTables.append(tape5)
 
-        # Setup EdgeIQ
+    # Setup EdgeIQ
     obj_detect = edgeiq.ObjectDetection(
             "alwaysai/mobilenet_ssd")
     obj_detect.load(engine=edgeiq.Engine.DNN_OPENVINO)
