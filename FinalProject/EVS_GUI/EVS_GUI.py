@@ -26,6 +26,7 @@ from PIL import ImageTk,Image
 import webbrowser
 import csv
 import os
+import generate_py_file
 
 # Create GUI instance
 gui = tk.Tk()
@@ -188,6 +189,8 @@ def generateFiles(tags):
             break
     
     print(endingValue)
+
+    #generate_py_file.generatePythonFile()
 
 
 def addBox(currentVal):

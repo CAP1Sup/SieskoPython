@@ -3,11 +3,16 @@ import edgeiq
 import pyfrc
 from networktables import NetworkTables
 import logging
+import numpy as np
 
 # Constant for the default confidence (0 being 0% sure and 1 being 100% sure)
-default_conf_thres = .5
+default_conf_thres = .75
+
+# TODO: Order the predictions in terms of priority (proximity?)
 
 def main():
+    # Allow Rio to boot and configure network
+    time.sleep(5.0)
 
     # Setup logging for the NetworkTables messages
     logging.basicConfig(level=logging.DEBUG)
@@ -17,9 +22,9 @@ def main():
 
     # Create table for values
     evs = NetworkTables.getTable('EVS')
-    sd = NetworkTables.getTable('SmartDashboard')
+    # sd = NetworkTables.getTable('SmartDashboard')
 
-    # Create sub-tables and append them to arrays
+    # Create sub-tables and append them to arrays: 3 for hatches, 3 for balls, and 6 for tape
     hatchTables = []
     ballTables = []
     tapeTables = []
@@ -51,7 +56,7 @@ def main():
     tape5 = evs.getSubTable('Tape5')
     tapeTables.append(tape5)
 
-    # Setup EdgeIQ
+        # Setup EdgeIQ
     obj_detect = edgeiq.ObjectDetection(
             "alwaysai/mobilenet_ssd")
     obj_detect.load(engine=edgeiq.Engine.DNN_OPENVINO)
@@ -65,11 +70,10 @@ def main():
     # Get the FPS
     fps = edgeiq.FPS()
 
-    sd.putString('DB/String 3', default_conf_thres)
+    # sd.putString('DB/String 3', default_conf_thres)
 
     try:
-        with edgeiq.WebcamVideoStream(cam=0) as video_stream, \
-                edgeiq.Streamer() as streamer:
+        with edgeiq.WebcamVideoStream(cam=0) as video_stream:
             # Allow Webcam to warm up
             time.sleep(2.0)
             fps.start()
@@ -82,21 +86,12 @@ def main():
 
             # loop detection
             while True:
-
-                # Grab evsue for confidence from SmartDashboard, if it can't, use default
-                confidence_thres = sd.getString('DB/String 3', default_conf_thres)
-
-                try:
-                    # Try converting string to a float
-                    confidence_thres = float(confidence_thres)
-                except:
-                    # If that fails, set the confidence threshold to the default value
-                    confidence_thres = default_conf_thres
+                confidence_thres = default_conf_thres
 
                 frame = video_stream.read()
                 results = obj_detect.detect_objects(frame, confidence_level = confidence_thres)
-                frame = edgeiq.markup_image(
-                        frame, results.predictions, colors=obj_detect.colors)
+                #frame = edgeiq.markup_image(
+                #        frame, results.predictions, colors=obj_detect.colors)
 
                 #Counters - they reset after every frame in the while loop
                 hatchCounter = 0
@@ -106,39 +101,38 @@ def main():
                 # Update the EVS NetworkTable with new values
                 for prediction in results.predictions:                                                                                                                        
 
+                    center_x, center_y = prediction.box.center
                     # Code goes here
-                    numValues = [prediction.box.center, prediction.box.end_x, prediction.box.end_y, prediction.box.area, (prediction.confidence*100)]
+                    numValues = [center_x, center_y, prediction.box.end_x, prediction.box.end_y, prediction.box.area, (prediction.confidence * 100)]
+                    
+                    for entry in range(0, len(numValues) - 1):
+                        numValues[entry] = round(numValues[entry], 3)
+
+                    numValuesArray = np.asarray(numValues)
                     
                     #
                     # IMPORTANT:
                     # Names of labels have not been decided yet
                     #
                     #
-                    if prediction.label == "Hatch":
-                        # Do label separately because it is a string
-                        hatchTables[hatchCounter].putString('label', prediction.label)
-
-                        hatchTables[hatchCounter].putNumberArray('values', numValues)
+                    if prediction.label == "train": # Hatches = trains
+                    
+                        hatchTables[hatchCounter].putNumberArray('values', numValuesArray)
                         # Boolean asks to update
                         hatchTables[hatchCounter].putBoolean('inUse', True)
 
                         hatchCounter += 1
 
-                    if prediction.label == "Ball":
-                        # Do label separately because it is a string
-                        ballTables[ballCounter].putString('label', prediction.label)
+                    elif prediction.label == "car": # Balls = cars 
 
-                        ballTables[ballCounter].putNumberArray('values', numValues)
+                        ballTables[ballCounter].putNumberArray('values', numValuesArray)
                         # Boolean asks to update
                         ballTables[ballCounter].putBoolean('inUse', True)
-
                         ballCounter += 1
 
-                    if prediction.label == "Tape":
-                        # Do label separately because it is a string
-                        tapeTables[tapeCounter].putString('label', prediction.label)
+                    elif prediction.label == "person": # Tape = people
 
-                        tapeTables[tapeCounter].putNumberArray('values', numValues)
+                        tapeTables[tapeCounter].putNumberArray('values', numValuesArray)
                         # Boolean asks to update
                         tapeTables[tapeCounter].putBoolean('inUse', True)
 
@@ -149,6 +143,8 @@ def main():
                 ballTables[ballCounter].putBoolean('inUse', False)
                 tapeTables[tapeCounter].putBoolean('inUse', False)
 
+                evs.putBoolean('checked', False)
+                '''
                 # Generate text to display on streamer
                 text = ["Model: {}".format(obj_detect.model_id)]
                 text.append("Inference time: {:1.3f} s".format(results.duration))
@@ -160,12 +156,12 @@ def main():
                         prediction.label, prediction.confidence * 100))
 
                 streamer.send_data(frame, text)
-
+                '''
                 fps.update()
-
+                '''
                 if streamer.check_exit():
                     break
-
+                '''
     finally:
         fps.stop()
         print("elapsed time: {:.2f}".format(fps.get_elapsed_seconds()))
