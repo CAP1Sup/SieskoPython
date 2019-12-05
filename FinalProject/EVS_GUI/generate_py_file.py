@@ -202,13 +202,14 @@ def main():
                     break\n''')
 
     addString('''    finally:
-        fps.stop()
+        fps.stop()''')
+    addString('''
         print("elapsed time: {:.2f}".format(fps.get_elapsed_seconds()))
         print("approx. FPS: {:.2f}".format(fps.compute_fps()))
 
-        print("Program Ending")
+        print("Program Ending")''')
 
-
+    addString('''
 if __name__ == "__main__":
     main()''')
 

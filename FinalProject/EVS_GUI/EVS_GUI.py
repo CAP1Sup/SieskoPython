@@ -18,6 +18,13 @@ first_entry_box_offset = 30
 fileDir = ""
 tag = []
 spinBox = []
+tag_list = [] 
+instance_list = []
+raw_team_number = None
+neural_compute_stick = None
+printInfo = None
+streamer = None
+dashboard_confidence = None
 
 # Import GUI library and Picture Library
 import tkinter as tk
@@ -102,11 +109,20 @@ def setupGUI():
     createLabel("Team Number", 440, top_row_offset, 200, 'l','Helvetica 14 bold')
 
     # Team number box
-    team_num = CreateEntry(400, top_row_offset + first_entry_box_offset, True)
+    global raw_team_number
+    raw_team_number = CreateEntry(400, top_row_offset + first_entry_box_offset, True)
 
-    tagValues = []
-    for entry in range(0, len(tag)):
-        tagValues.append(tag[entry].get())
+    global neural_compute_stick
+    neural_compute_stick = False
+
+    global printInfo
+    printInfo = True
+
+    global streamer
+    steamer = True
+
+    global dashboard_confidence
+    dashboard_confidence = True
 
     # Create button for generating code files
     #generateButton = tk.Button(gui, text = "Generate files", command = generateFiles(tagValues), font = 'Helvetica 20 bold')
@@ -177,20 +193,33 @@ def onDirError(self):
     tk.messagebox.showerror("Error", "Could not open file")
 
 
-def generateFiles(tags):
+def generateFiles():
 
-    endingValue = 0
+    global tag
+    global tag_list
+    global instance_list
+    global raw_team_number
+    global neural_compute_stick
+    global printInfo
+    global streamer
+    global dashboard_confidence
 
-    for entry in range(0, len(tags)):
-        if not tags[entry] == "":
+    # Get tags until one is empty
+    for entry in range(0, len(tag)):
+        tag_entry_value = tag[entry].get()
+        if not tag_entry_value == "":
+            tag_list.append(tag_entry_value)
             continue
         else:
-            endingValue = entry
             break
-    
-    print(endingValue)
 
-    #generate_py_file.generatePythonFile()
+    # Set the instance list to the values
+    for entry in range(0, len(tag_list)):
+        instance_list.append(spinBox[entry].get())
+
+    print(len(tag_list))
+
+    generate_py_file.generatePythonFile(tag_list, instance_list, raw_team_number, neural_compute_stick, printInfo, streamer, dashboard_confidence)
 
 
 def addBox(currentVal):
