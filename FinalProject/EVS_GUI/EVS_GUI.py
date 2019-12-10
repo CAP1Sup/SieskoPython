@@ -8,6 +8,18 @@
 # Finish file generator
 # help tab and files
 
+# Import GUI library and Picture Library
+import tkinter as tk
+from tkinter import filedialog
+from PIL import ImageTk,Image # TODO: Write install script
+import webbrowser
+import csv
+import os
+import generate_py_file
+
+# Create GUI instance
+gui = tk.Tk()
+
 # Constants
 maxTitles = 3
 tagCount = 10
@@ -21,22 +33,10 @@ spinBox = []
 tag_list = [] 
 instance_list = []
 raw_team_number = None
-neural_compute_stick = None
-printInfo = None
-streamer = None
-dashboard_confidence = None
-
-# Import GUI library and Picture Library
-import tkinter as tk
-from tkinter import filedialog
-from PIL import ImageTk,Image
-import webbrowser
-import csv
-import os
-import generate_py_file
-
-# Create GUI instance
-gui = tk.Tk()
+neural_compute_stick = tk.BooleanVar()
+print_info = tk.BooleanVar()
+streamer = tk.BooleanVar()
+dashboard_confidence = tk.BooleanVar()
 
 # Assign current directory
 currentDir = os.path.dirname(os.path.abspath(__file__))
@@ -113,16 +113,24 @@ def setupGUI():
     raw_team_number = CreateEntry(400, top_row_offset + first_entry_box_offset, True)
 
     global neural_compute_stick
-    neural_compute_stick = False
+    neural_compute_stick_checkbox = tk.Checkbutton(gui, text="Using Neural Compute Stick?", var = neural_compute_stick)
+    neural_compute_stick_checkbox.config(wraplength = 300)
+    neural_compute_stick_checkbox.place(x = 390, y = 200)
 
-    global printInfo
-    printInfo = True
+    global print_info
+    print_info_checkbox = tk.Checkbutton(gui, text="Print running info? This most likely will not save any processing power by disabling", var = print_info)
+    print_info_checkbox.config(wraplength = 300)
+    print_info_checkbox.place(x = 390, y = 263)
 
     global streamer
-    steamer = True
+    streamer_checkbox = tk.Checkbutton(gui, text="Use the streamer? This will cause a drop in framerate, but will be benefical for testing", var = streamer)
+    streamer_checkbox.config(wraplength = 300)
+    streamer_checkbox.place(x = 390, y = 326)
 
     global dashboard_confidence
-    dashboard_confidence = True
+    dashboard_confidence_checkbox = tk.Checkbutton(gui, text="View and modify confidence threshold on the SmartDashboard? (Beta! Use at your own risk!)", var = dashboard_confidence)
+    dashboard_confidence_checkbox.config(wraplength = 300)
+    dashboard_confidence_checkbox.place(x = 390, y = 390)
 
     # Create button for generating code files
     #generateButton = tk.Button(gui, text = "Generate files", command = generateFiles(tagValues), font = 'Helvetica 20 bold')
@@ -200,7 +208,7 @@ def generateFiles():
     global instance_list
     global raw_team_number
     global neural_compute_stick
-    global printInfo
+    global print_info
     global streamer
     global dashboard_confidence
 
@@ -217,12 +225,21 @@ def generateFiles():
     for entry in range(0, len(tag_list)):
         instance_list.append(spinBox[entry].get())
 
-    print(len(tag_list))
+    # TODO: Create check function
+    raw_team_number_val = float(raw_team_number.get())
 
-    generate_py_file.generatePythonFile(tag_list, instance_list, raw_team_number, neural_compute_stick, printInfo, streamer, dashboard_confidence)
+    neural_compute_stick_val = neural_compute_stick.get()
+
+    print_info_val = print_info.get()
+
+    streamer_val = streamer.get()
+
+    dashboard_confidence_val = dashboard_confidence.get()
+
+    generate_py_file.generatePythonFile(tag_list, instance_list, raw_team_number_val, neural_compute_stick_val, print_info_val, streamer_val, dashboard_confidence_val)
 
 
-def addBox(currentVal):
+
     print("")
 
 
