@@ -244,7 +244,7 @@ def buildLabelClassfier(tagName):
 
 
 
-
+'''
 tag_list = ("hatch", "ball", "tape") 
 instance_list = (3, 3, 6)
 raw_team_number = 834
@@ -252,5 +252,5 @@ neural_compute_stick = True
 printInfo = True
 streamer = True
 dashboard_confidence = True
-
+'''
 # generatePythonFile(tag_list, instance_list, raw_team_number, neural_compute_stick, printInfo, streamer, dashboard_confidence)
