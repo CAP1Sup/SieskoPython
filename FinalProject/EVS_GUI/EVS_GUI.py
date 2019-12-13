@@ -13,7 +13,7 @@ from tkinter import filedialog
 from PIL import ImageTk, Image # TODO: Write install script
 import csv
 import os
-import generate_py_file
+import generate_files
 
 # Create GUI instance
 gui = tk.Tk()
@@ -31,6 +31,7 @@ spinBox = []
 tag_list = [] 
 instance_list = []
 raw_team_number = None
+model_name = None
 neural_compute_stick = tk.BooleanVar()
 print_info = tk.BooleanVar()
 streamer = tk.BooleanVar()
@@ -114,6 +115,13 @@ def setupGUI():
     global raw_team_number
     raw_team_number = CreateEntry(400, top_row_offset + first_entry_box_offset, True)
 
+    # Model name title
+    createLabel("Model Name (ex. alwaysai/mobilenet_ssd)", 575, top_row_offset, 300, 'l','Helvetica 14 bold')
+
+    # Model name box
+    global model_name
+    model_name = CreateEntry(600, top_row_offset + first_entry_box_offset, True)
+
     global neural_compute_stick
     global neural_compute_stick_checkbox
     neural_compute_stick_checkbox = tk.Checkbutton(gui, text="Using Neural Compute Stick?", var = neural_compute_stick)
@@ -151,6 +159,7 @@ def getParameterValues():
 
     # Load all of the universal values
     global raw_team_number
+    global model_name
     global neural_compute_stick
     global print_info
     global streamer
@@ -158,13 +167,14 @@ def getParameterValues():
 
     # Get thier values and save them in _val variables
     raw_team_number_val = raw_team_number.get()
+    model_name_val = model_name.get()
     neural_compute_stick_val = neural_compute_stick.get()
     print_info_val = print_info.get()
     streamer_val = streamer.get()
     dashboard_confidence_val = dashboard_confidence.get()
 
     # Return them as a string
-    return raw_team_number_val, neural_compute_stick_val, print_info_val, streamer_val, dashboard_confidence_val
+    return raw_team_number_val, model_name_val, neural_compute_stick_val, print_info_val, streamer_val, dashboard_confidence_val
 
 
 def getTextFile(path):
@@ -196,7 +206,7 @@ def saveSettings(dir = None):
 
     # Store the settings in a .csv file
     with open(dir + '//EVS_settings.csv', mode='w+') as settingsFile:
-        parameter_field_names = ['team_num', 'neural_compute_stick', 'print_info', 'streamer', 'dashboard_confidence']
+        parameter_field_names = ['team_num', 'model_name', 'neural_compute_stick', 'print_info', 'streamer', 'dashboard_confidence']
         parameter_writer = csv.DictWriter(settingsFile, fieldnames = parameter_field_names)
 
         tag_and_instance_field_names = ['tag', 'instance_number']
@@ -208,7 +218,7 @@ def saveSettings(dir = None):
         parameters = getParameterValues()
 
         parameter_writer.writeheader()
-        parameter_writer.writerow({'team_num': parameters[0], 'neural_compute_stick': parameters[1], 'print_info': parameters[2], 'streamer': parameters[3], 'dashboard_confidence': parameters[4]})
+        parameter_writer.writerow({'team_num': parameters[0], 'model_name' : parameters[1], 'neural_compute_stick': parameters[2], 'print_info': parameters[3], 'streamer': parameters[4], 'dashboard_confidence': parameters[5]})
 
         tag_and_instance_writer.writeheader()
         for entry in range(0, tagCount - 1):
@@ -228,6 +238,7 @@ def loadSettings(file = None):
     global tag
     global spinBox
     global raw_team_number
+    global model_name
     global neural_compute_stick
     global print_info
     global streamer
@@ -251,16 +262,18 @@ def loadSettings(file = None):
 
         raw_team_number.set(data[1][0])
         
-        if not neural_compute_stick.get() == (data[1][1] == "True"):
+        model_name.set(data[1][1])
+
+        if not neural_compute_stick.get() == (data[1][2] == "True"):
             neural_compute_stick_checkbox.toggle()
 
-        if not print_info.get() == (data[1][2] == "True"):
+        if not print_info.get() == (data[1][3] == "True"):
             print_info_checkbox.toggle()
 
-        if not streamer.get() == (data[1][3] == "True"):
+        if not streamer.get() == (data[1][4] == "True"):
             streamer_checkbox.toggle()
 
-        if not dashboard_confidence.get() == (data[1][4] == "True"):
+        if not dashboard_confidence.get() == (data[1][5] == "True"):
             dashboard_confidence_checkbox.toggle()
 
 
@@ -275,6 +288,7 @@ def generateFiles():
     global tag_list
     global instance_list
     global raw_team_number
+    global model_name
     global neural_compute_stick
     global print_info
     global streamer
@@ -296,6 +310,8 @@ def generateFiles():
     # TODO: Create check function
     raw_team_number_val = float(raw_team_number.get())
 
+    model_name_val = model_name.get()
+
     neural_compute_stick_val = neural_compute_stick.get()
 
     print_info_val = print_info.get()
@@ -304,10 +320,10 @@ def generateFiles():
 
     dashboard_confidence_val = dashboard_confidence.get()
 
-    python_file_contents = generate_py_file.generatePythonFile(tag_list, instance_list, raw_team_number_val, neural_compute_stick_val, print_info_val, streamer_val, dashboard_confidence_val)
+    python_file_contents = generate_files.generatePythonFile(tag_list, instance_list, raw_team_number_val, model_name_val, neural_compute_stick_val, print_info_val, streamer_val, dashboard_confidence_val)
 
-    selectDir(title = "Choose a directory for the output files:")
-    python_file = open("app.py", mode = "w+")
+    save_dir = selectDir(title = "Choose a directory for the output files:")
+    python_file = open(save_dir + "/app.py", mode = "w+")
     python_file.write(python_file_contents)
 
     print("Finished file export!")
